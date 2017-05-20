@@ -116,6 +116,8 @@ public:
         return mOriginalHandRanges;
     }
 
+	void evaluateOpenBoard(const std::vector<std::array<uint8_t, 2>>& playerHands, const std::vector<uint8_t>& board, const std::vector<uint8_t>& dead, std::vector<uint64_t>& outs, std::vector<double>& equis);
+
 private:
     typedef XoroShiro128Plus Rng;
 

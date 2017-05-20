@@ -67,6 +67,58 @@ bool EquityCalculator::start(const std::vector<CardRange>& handRanges, uint64_t 
     return true;
 }
 
+void EquityCalculator::evaluateOpenBoard(const std::vector<std::array<uint8_t, 2>>& playerHands, const std::vector<uint8_t>& board, const std::vector<uint8_t>& dead,  std::vector<uint64_t>& outs, std::vector<double>& equis)
+{
+	std::vector<HandWithPlayerIdx> players;
+	players.reserve(playerHands.size());
+	for (unsigned i = 0; i < playerHands.size(); ++i)
+	{		
+		players.push_back({ playerHands[i], i });
+	}
+	BatchResults stats(playerHands.size());
+	
+	uint64_t usedMask = 0;
+	for (auto hand : playerHands) 
+	{
+		usedMask |= 1ull << hand[0];
+		usedMask |= 1ull << hand[1];
+	}
+
+	for (auto card : dead)
+	{
+		usedMask |= 1ull << card;
+	}
+
+	Hand boardHand(Hand::empty());
+	for (auto card : board)
+	{
+		usedMask |= 1ull << card;
+		boardHand += Hand(card);
+	}
+
+	mResults = Results();
+	mResults.players = (unsigned)playerHands.size();
+	mResults.enumerateAll = true;
+
+	enumerateBoard(players.data(), players.size(), boardHand, usedMask, &stats);
+	
+	outs.reserve(playerHands.size());
+	equis.reserve(playerHands.size());
+
+	updateResults(stats, true);
+	
+	
+	for (int i = 0; i < mResults.players; ++i)
+	{
+		outs.push_back(mResults.wins[i]);
+	}
+
+	for (int i = 0; i < mResults.players; ++i)
+	{
+		equis.push_back(mResults.equity[i]);
+	}
+}
+
 // Regular monte carlo simulation.
 void EquityCalculator::simulateRegularMonteCarlo()
 {

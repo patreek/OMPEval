@@ -1,0 +1,6 @@
+*.log
+*.tlog
+*.VC.db
+/tmp
+/out
+/.vs
