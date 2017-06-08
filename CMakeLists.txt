@@ -1,0 +1,1 @@
+add_library(OMPEval omp/CardRange.cpp omp/CombinedRange.cpp omp/EquityCalculator.cpp omp/HandEvaluator.cpp)
